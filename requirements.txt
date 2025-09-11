@@ -1,0 +1,14 @@
+numpy
+pandas
+python-dotenv
+langchain
+langchain-groq
+langchain_community
+faiss-cpu
+pypdf
+langchain_huggingface
+sentence-transformers
+ipykernel
+wikipedia
+numexpr 
+Django 
