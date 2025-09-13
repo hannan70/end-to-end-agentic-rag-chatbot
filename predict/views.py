@@ -23,19 +23,13 @@ def upload_document(request):
     if request.method == "POST":
         uploaded_files = request.FILES.getlist('documents')
         process_file(uploaded_files)
-        return JsonResponse({"status": "Success", "message": "File uploaded Success"})
-    
+        return JsonResponse({"status": 200, "message": "File uploaded successfully!"})
     return JsonResponse({"status": "Failed", "message": "Only Allow Post Method"})
 
 def predict(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         user_question = data.get("message")
-
         response = llm_process(llm, user_question)
-
-        print(response)
-
-        return JsonResponse({"status": "Success", "message": "File uploaded Success", "response": response['answer']})
-
+        return JsonResponse({"status": "Success", "response": response['answer']})
     return JsonResponse({"status": "Failed", "message": "Only Allow Post Method"})

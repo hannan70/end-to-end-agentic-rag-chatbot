@@ -16,12 +16,22 @@
                         <span id="filename"></span>     
                     </div> 
                     <button class="upload_btn" id="upload_document">Upload</button> 
+                    <button class="upload_btn" id="upload_document_icon"><i class="fa-solid fa-spinner fa-spin-pulse fa-spin-reverse"></i></button> 
                 </div>
-                <div class="choose_model">
+                <div class="select_option">
+                    <h2>Choose Model:</h2>
                     <select name="choose_model">
                         <option value="llama-3.1-8b-instant">Llama-3.1-8b-instant</option>
                         <option value="llama-3.3-70b-versatile">Llama-3.3-70b-versatile</option>
                         <option value="gemma2-9b-it">Gemma2-9b-it</option>
+                    </select>
+                </div>
+                <div class="select_option">
+                    <h2>Reasoning:</h2>
+                    <select name="choose_model">
+                        <option value="low">Low</option>
+                        <option value="medium" selected> Medium</option>
+                        <option value="high">High</option>
                     </select>
                 </div>
             </div>
@@ -80,144 +90,6 @@
         </div>
     </div>
 </div>
-
-<script>
-    
-    chatForm = document.getElementById('chat-form')
-    messageInput = document.getElementById('message-input')
-    chatMessages = document.getElementById("chat-message")
-    const chatContainer = document.querySelector(".chat-widget-body");
-    const handleFileUpload = document.querySelector("#handleFileUpload");
-    const fileinput = document.getElementById('fileInput')
-    const filename = document.getElementById('filename')
-    const upload_document = document.getElementById("upload_document")
-
-
-    handleFileUpload.addEventListener("click", function() {
-        fileinput.click()
-    })
-
-    let files
-    //  get file name
-    fileinput.addEventListener("change", function(e) {
-        files = e.target.files 
-        output = ""
-        for(file of files){
-            output += `<strong>File Name:</strong> ${file.name} </br>`
-        }
-        filename.innerHTML = output
-    })
-
-    //  upload document
-    upload_document.addEventListener("click", async () => {
-        if(!files || files.length === 0){
-            alert("Please select at least one file.")
-            return
-        }
-
-        let formData = new FormData()
-        for(let i=0; i < files.length; i++){
-            formData.append("documents", files[i])
-        }
-         
-        try {
-            const response = await fetch("{% url 'upload_document' %}", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    "X-CSRFToken": "{{ csrf_token }}",
-                },
-            });
-
-            const data = await response.json();
-            console.log("Success:", data);
-            console.log(data.message)
-        } catch (error) {
-            console.error("Error:", error);
-        }
-
-    })
-
-    
-    // handle chatbot
-
-    chatForm.addEventListener("submit", async function (e) {
-        e.preventDefault();  
-        
-        const userMessage = messageInput.value.trim();
-        if(!userMessage) return
-
-        chatMessages.innerHTML += `
-        <li> 
-            <div class="human_message">
-                <span>${userMessage}</span>
-            </div>
-        </li>
-        `
-
-        messageInput.value = "";
-
-        const typingElement = document.createElement("li");
-        typingElement.innerHTML = `
-            <div class="ai_message_section"> 
-                <div class="ai-image">
-                    <img src="{% static 'image/ai-message.png' %}" alt="image">
-                </div>
-                <div class="ai-massage">
-                    <span class="ai-name">assistant</span>
-                    <div class="ai-response">
-                        <div class="typing-indicator">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        chatMessages.appendChild(typingElement);
-
-        // Scroll to bottom 
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-
-
-        const response = await fetch("{% url 'predict' %}", {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": "{{ csrf_token }}",  
-            },
-            body: JSON.stringify({ message: userMessage }),
-        });
-
-    
-
-        const data = await response.json();
-        const ai_message = data.response
-
-        // Remove typing indicator
-        typingElement.remove();
-
-        chatMessages.innerHTML += `
-            <li>
-                <div class="ai_message_section"> 
-                    <div class="ai-image">
-                        <img src="{% static 'image/ai-message.png' %}" alt="image">
-                    </div>
-                    <div class="ai-massage">
-                        <span class="ai-name">assistant</span>
-                        <div class="ai-response">
-                            <span>${ai_message}</span>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        `;
-
-        // 4. Optional: Scroll to bottom
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-
-   });
-</script>
+ 
  
 {% endblock %}

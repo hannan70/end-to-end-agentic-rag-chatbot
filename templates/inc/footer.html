@@ -3,8 +3,188 @@
     <script src="{% static 'js/all.min.js' %}"></script>
     <script src="{% static 'js/fontawesome.min.js' %}"></script> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="{% static 'js/wow.min.js' %}"></script>
+    <script src="{% static 'js/wow.min.js' %}"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{% static 'js/app.js' %}"></script>
+
+    <script>
+        
+    // Your options
+    toastr.options = {
+      "closeButton": false,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": false,
+      "positionClass": "toast-top-left",  
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    }
+ 
+
+    chatForm = document.getElementById('chat-form')
+    messageInput = document.getElementById('message-input')
+    chatMessages = document.getElementById("chat-message")
+    const chatContainer = document.querySelector(".chat-widget-body");
+    const handleFileUpload = document.querySelector("#handleFileUpload");
+    const fileinput = document.getElementById('fileInput')
+    const filename = document.getElementById('filename')
+    const upload_document = document.getElementById("upload_document")
+    const upload_document_icon = document.getElementById("upload_document_icon")
+
+    /* ========================
+        FILE UPLOAD SECTION
+    ============================*/  
+    handleFileUpload.addEventListener("click", function() {
+        fileinput.click()
+    })
+
+    let files
+    //  get file name
+    fileinput.addEventListener("change", function(e) {
+        files = e.target.files 
+        output = ""
+        for(file of files){
+            output += `<strong>File Name:</strong> ${file.name} </br>`
+        }
+        filename.innerHTML = output
+    })
+     
+
+    //  upload document
+    upload_document.addEventListener("click", async (event) => {
+        if(!files || files.length === 0){
+            alert("Please select at least one file.")
+            return
+        }
+
+        let formData = new FormData()
+        for(let i=0; i < files.length; i++){
+            formData.append("documents", files[i])
+        }
+         
+        event.target.style.display = "none"
+        upload_document_icon.style.display = "block"
+
+        try {
+            const response = await fetch("{% url 'upload_document' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+            });
+
+            const data = await response.json(); 
+            if (data.status === 200){
+                event.target.style.display = "block"
+                upload_document_icon.style.display = "none"
+                toastr.success(data.message);
+            }
+
+        } catch (error) {
+            console.error("Error:", error);
+        }
+
+    })
+
+    
+    /*
+    ================================
+    CHAT MESSAGE BODY 
+    ================================
+    */
+
+    chatForm.addEventListener("submit", async function (e) {
+        e.preventDefault();  
+        
+        const userMessage = messageInput.value.trim();
+        if(!userMessage) return
+
+        chatMessages.innerHTML += `
+        <li> 
+            <div class="human_message">
+                <span>${userMessage}</span>
+            </div>
+        </li>
+        `
+
+        messageInput.value = "";
+
+        const typingElement = document.createElement("li");
+        typingElement.innerHTML = `
+            <div class="ai_message_section"> 
+                <div class="ai-image">
+                    <img src="{% static 'image/ai-message.png' %}" alt="image">
+                </div>
+                <div class="ai-massage">
+                    <span class="ai-name">assistant</span>
+                    <div class="ai-response">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(typingElement);
+
+        // Scroll to bottom 
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+
+        const response = await fetch("{% url 'predict' %}", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",  
+            },
+            body: JSON.stringify({ message: userMessage }),
+        });
+
+    
+
+        const data = await response.json();
+        const ai_message = data.response
+
+        // Remove typing indicator
+        typingElement.remove();
+
+        chatMessages.innerHTML += `
+            <li>
+                <div class="ai_message_section"> 
+                    <div class="ai-image">
+                        <img src="{% static 'image/ai-message.png' %}" alt="image">
+                    </div>
+                    <div class="ai-massage">
+                        <span class="ai-name">assistant</span>
+                        <div class="ai-response">
+                            <span>${ai_message}</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        `;
+
+        // 4. Optional: Scroll to bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+   });
+    /*
+    ================================
+    CHAT MESSAGE BODY 
+    ================================
+    */
+    </script>
 
 </body>
 </html>

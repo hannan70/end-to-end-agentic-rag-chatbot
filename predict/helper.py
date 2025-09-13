@@ -38,7 +38,8 @@ def process_file(uploaded_files):
     # embedding
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     vector_store = FAISS.from_documents(final_documents, embedding=embeddings)
-   
+    
+     
 
 
 def llm_process(llm, user_question):

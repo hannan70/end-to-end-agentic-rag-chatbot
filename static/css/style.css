@@ -284,16 +284,21 @@
     border: none;
     border-radius: 10px;
 }
-.choose_model {
+.select_option {
     max-width: 500px;
-    margin-left: auto;
-    text-align: center;
+    margin-left: auto; 
     margin-top: 40px;
 }
-
-.choose_model select {
+.select_option h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+select {
     width: 100%;
     padding: 14px;
     border: 1px solid #ddd;
     outline: none;
+}
+#upload_document_icon {
+  display: none;
 }
