@@ -12,3 +12,8 @@ ipykernel
 wikipedia
 numexpr 
 Django 
+crewai
+crewai-tools
+tavily-python
+tokenizers==0.20.3
+langchain-openai

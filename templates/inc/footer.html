@@ -38,6 +38,8 @@
     const filename = document.getElementById('filename')
     const upload_document = document.getElementById("upload_document")
     const upload_document_icon = document.getElementById("upload_document_icon")
+    const choose_model = document.getElementById("choose_model")
+    const reasoningLevel = document.getElementById("reasoningLevel")
 
     /* ========================
         FILE UPLOAD SECTION
@@ -98,6 +100,46 @@
     
     /*
     ================================
+    CHOOSE MODEL
+    ================================
+    */
+    choose_model.addEventListener("change", async (e) => {
+        let value = e.target.value
+        let formData = new FormData()
+        formData.append("model_name", value)
+
+        const response = await fetch("{% url 'change_llm' %}", {
+            method: "POST",
+            body: formData,
+            headers: {"X-CSRFToken": "{{ csrf_token }}"},
+        })
+        data = await response.json()
+        console.log(data)
+    })
+
+
+     /*
+    ================================
+    CHOOSE REASONING
+    ================================
+    */
+    reasoningLevel.addEventListener("change", async (e) => {
+        let reasoning = e.target.value
+        const response = await fetch("{% url 'set_reasoning' %}", {
+            method: "POST",
+            body: JSON.stringify({ reasoning: reasoning }),
+            headers: { 
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            }
+        })
+        const data = await response.json()
+        console.log("Reasoning set:", data)
+    })
+
+
+    /*
+    ================================
     CHAT MESSAGE BODY 
     ================================
     */
@@ -125,7 +167,7 @@
                     <img src="{% static 'image/ai-message.png' %}" alt="image">
                 </div>
                 <div class="ai-massage">
-                    <span class="ai-name">assistant</span>
+                    <span class="ai-name">Assistant</span>
                     <div class="ai-response">
                         <div class="typing-indicator">
                             <span></span>
@@ -155,6 +197,8 @@
 
         const data = await response.json();
         const ai_message = data.response
+        console.log(data.response.answer)
+        console.log(data.response.source)
 
         // Remove typing indicator
         typingElement.remove();
@@ -166,7 +210,7 @@
                         <img src="{% static 'image/ai-message.png' %}" alt="image">
                     </div>
                     <div class="ai-massage">
-                        <span class="ai-name">assistant</span>
+                        <span class="ai-name">Assistant</span>
                         <div class="ai-response">
                             <span>${ai_message}</span>
                         </div>

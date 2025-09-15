@@ -20,15 +20,15 @@
                 </div>
                 <div class="select_option">
                     <h2>Choose Model:</h2>
-                    <select name="choose_model">
-                        <option value="llama-3.1-8b-instant">Llama-3.1-8b-instant</option>
-                        <option value="llama-3.3-70b-versatile">Llama-3.3-70b-versatile</option>
-                        <option value="gemma2-9b-it">Gemma2-9b-it</option>
+                    <select name="model_name" id="choose_model"> 
+                        <option value="openai/gpt-3.5-turbo">GPT-3.5-turbo</option>
+                        <option value="openai/gpt-4-turbo">GPT-4-turbo</option>
+                        <option value="openai/gpt-4.0-mini">GPT-4.0-mini</option>
                     </select>
                 </div>
                 <div class="select_option">
                     <h2>Reasoning:</h2>
-                    <select name="choose_model">
+                    <select id="reasoningLevel">
                         <option value="low">Low</option>
                         <option value="medium" selected> Medium</option>
                         <option value="high">High</option>
