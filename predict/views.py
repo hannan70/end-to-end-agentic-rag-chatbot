@@ -2,9 +2,8 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-import tempfile
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from django.http import JsonResponse
+import tempfile 
 from predict.helper import process_file, llm_process
 import json 
 
