@@ -65,7 +65,7 @@ API will run at: http://127.0.0.1:8000/
 ```
 
 ## 📄 API Documentation
-![Frontend View ](ui-image.png)
+![Frontend View ](ui-image.jpg)
 
 
 ## 🏗️ System Architecture
