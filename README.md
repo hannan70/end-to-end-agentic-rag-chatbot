@@ -1,4 +1,4 @@
-# 📚 PDF to Q&A Generator
+# 📚 Agentic RAG Chatbot
 
 ## This project is an End-to-End Agentic RAG Chatbot System built with Django, LangChain, CrewAI, FAISS, and OpenAI/HuggingFace Embeddings.
 
